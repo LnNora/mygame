@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>猜歌</title>
+	<style type="text/css">
+	body{
+		background-color: #5759be;
+	}
+.playwrap{border-radius: 500px;
+	background-color: white;
+	width: 60%;
+	margin: 0 auto;
+	margin-top: 20%;
+	position: relative;
+}
+.playarea{
+	border-radius: 500px;
+	width: 90%;
+	margin: 0 auto;
+	position: relative;top: 5%;
+	background-image: url(images/earth.png);
+	background-size: contain;
+	filter: drop-shadow(0px 0px 20px black);
+}
+.btn-audio{
+    width: 30%;
+    height: 30%;
+    margin: 0 auto;
+    position: absolute;top: 35%;left: 35%;
+    background:url(images/voice_play.png) no-repeat center bottom;
+    background-size:cover;
+}
+	</style>
+</head>
+<body>
+<div class="playwrap">
+	<div class="playarea">
+	</div>
+	 <div class="btn-audio"><audio id="mp3Btn"><source src="music/111.mp3" type="audio/mpeg" /></audio></div>
+</div>
+
+    <script type="text/javascript" src="jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="jqueryrotate/js/jQueryRotate.js"></script>
+    <script type="text/javascript">
+     var w1 = $(".playwrap").width();
+    $(".playwrap").height(w1);
+    var w2 = $(".playarea").width();
+    $(".playarea").height(w2);
+       $(function(){
+        //播放完毕
+        $('#mp3Btn').on('ended', function() {
+            console.log("音频已播放完成");
+            $('.btn-audio').css({'background':'url(images/earth.jpg) no-repeat center bottom','background-size':'cover'});
+        })
+        //播放器控制
+        var audio = document.getElementById('mp3Btn');
+        audio.volume = .3;
+        var r;
+        var angle = 0;
+        $('.btn-audio').click(function() {
+            event.stopPropagation();//防止冒泡
+            if(audio.paused){ //如果当前是暂停状态
+                $('.btn-audio').css({'background':'url(images/voice_stop.png) no-repeat center bottom','background-size':'cover'});
+                audio.play(); //播放
+                //旋转
+              var angle = 0;
+			  r = setInterval(function(){
+			    angle+=2;
+			  $(".playarea").rotate(angle);
+			  },50);
+                return;
+            }else{//当前是播放状态
+                $('.btn-audio').css({'background':'url(images/voice_play.png) no-repeat center bottom','background-size':'cover'});
+                audio.pause(); //暂停
+                window.clearInterval(r);
+            }
+        });
+    })
+    </script>
+   
+</body>
+</html>

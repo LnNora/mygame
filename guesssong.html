@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable = no">
 	<title>猜歌</title>
 	<style type="text/css">
 	body{
@@ -31,18 +32,41 @@
     background:url(images/voice_play.png) no-repeat center bottom;
     background-size:cover;
 }
+
+.text{
+    width: 90%;margin: 0 auto;
+    text-align: center;
+    margin-top: 3rem;
+}
 	</style>
+
 </head>
 <body>
+<!--音频区域-->
 <div class="playwrap">
 	<div class="playarea">
 	</div>
-	 <div class="btn-audio"><audio id="mp3Btn"><source src="music/111.mp3" type="audio/mpeg" /></audio></div>
+	 <div class="btn-audio"><audio id="mp3Btn"><source type="audio/mpeg" /></audio></div>
 </div>
+<!--文本区域-->
+<div class="text">
+<input type="text" name="songname"  placeholder="猜对有奖" id="songname">
+<input type="button" name="btn" value="确定" id="confirm">
+</div>
+
+
+
+
+
 
     <script type="text/javascript" src="jquery-3.3.1.js"></script>
     <script type="text/javascript" src="jqueryrotate/js/jQueryRotate.js"></script>
     <script type="text/javascript">
+        //创建对象
+        var audioCollection = [{src:"music/111.mp3",name:"儿时"}];
+    </script>
+    <script type="text/javascript">
+
      var w1 = $(".playwrap").width();
     $(".playwrap").height(w1);
     var w2 = $(".playarea").width();
@@ -51,31 +75,68 @@
         //播放完毕
         $('#mp3Btn').on('ended', function() {
             console.log("音频已播放完成");
-            $('.btn-audio').css({'background':'url(images/earth.jpg) no-repeat center bottom','background-size':'cover'});
+            $('.btn-audio').css({'background':'url(images/voice_play.png) no-repeat center bottom','background-size':'cover'});
+            window.clearInterval(r);
         })
         //播放器控制
         var audio = document.getElementById('mp3Btn');
+        var $comfirm = $("#confirm");
+        var $songname = $("#songname");
         audio.volume = .3;
         var r;
         var angle = 0;
+        var t;
+        var end=5;
+        //插入音频资源
+        $("#mp3Btn source").attr("src",audioCollection[0].src);
+
+        //播放和停止控制
         $('.btn-audio').click(function() {
             event.stopPropagation();//防止冒泡
             if(audio.paused){ //如果当前是暂停状态
                 $('.btn-audio').css({'background':'url(images/voice_stop.png) no-repeat center bottom','background-size':'cover'});
                 audio.play(); //播放
                 //旋转
-              var angle = 0;
-			  r = setInterval(function(){
-			    angle+=2;
-			  $(".playarea").rotate(angle);
-			  },50);
-                return;
+                coverRotate()
             }else{//当前是播放状态
                 $('.btn-audio').css({'background':'url(images/voice_play.png) no-repeat center bottom','background-size':'cover'});
-                audio.pause(); //暂停
+                audio.load(); //暂停
                 window.clearInterval(r);
             }
         });
+
+
+        
+        //使音频在指定时间停止
+        audio.ontimeupdate=function(){
+            if (audio.currentTime>end) {
+                $('.btn-audio').css({'background':'url(images/voice_play.png) no-repeat center bottom','background-size':'cover'});
+                audio.load();
+                window.clearInterval(r);
+            }
+        };
+       //如果猜歌正确，那么播放音频
+        $comfirm.click(function() {
+            if($songname.val()==audioCollection[0].name){ //如果当前是暂停状态
+                $('.btn-audio').css({'background':'url(images/voice_stop.png) no-repeat center bottom','background-size':'cover'});
+                audio.play();
+                end=500; //播放
+                //旋转
+               coverRotate();
+            };
+        });
+
+
+        //封面旋转
+        function coverRotate(){
+              var angle = 0;
+              r = setInterval(function(){
+                angle+=2;
+              $(".playarea").rotate(angle);
+              },50);
+                return;
+        }
+      
     })
     </script>
    

@@ -6,23 +6,24 @@
 	<title>猜歌</title>
 	<style type="text/css">
 	body{
-		background-color: #5759be;
+		background-color: #3a3ea1;
 	}
+    p{margin-top: 0;}li{list-style-type: none;}ul{padding: 0;margin: 0}
 .playwrap{border-radius: 500px;
 	background-color: white;
-	width: 60%;
+	width: 55%;
 	margin: 0 auto;
-	margin-top: 20%;
+	margin-top: 22.5%;
 	position: relative;
 }
 .playarea{
 	border-radius: 500px;
-	width: 90%;
+	width: 95%;
 	margin: 0 auto;
-	position: relative;top: 5%;
+	position: relative;top: 2.5%;
 	background-image: url(images/earth.png);
 	background-size: contain;
-	filter: drop-shadow(0px 0px 20px black);
+	filter: drop-shadow(0px 0px 8px black);
 }
 .btn-audio{
     width: 30%;
@@ -33,12 +34,43 @@
     background-size:cover;
 }
 
-.text{
+.user-answer{
     width: 90%;margin: 0 auto;
-    text-align: center;
     margin-top: 3rem;
+    display: flex;
+    justify-content: center;
 }
+.user-answer p{
+    width: 2.2rem;height: 2.2rem;
+    text-align: center;
+    border: none;
+    margin-right: 0.4rem;
+    background-color: #6b6ed9;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 0px #5253c7;
+}
+.user-answer p:last-child{
+    margin-right: 0;
+}
+.characters ul{
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 88.4%;box-sizing: border-box;margin: 0 auto;
+}
+.characters li{
+    width: 12.5%;
+    background-color: white;
+    border-radius: 8px;
+    margin-bottom: 10px;margin-right: 2.0833%;
+}
+.characters li:nth-child(7n+0){
+    margin-right: 0;
+}
+
 	</style>
+
 
 </head>
 <body>
@@ -48,12 +80,13 @@
 	</div>
 	 <div class="btn-audio"><audio id="mp3Btn"><source type="audio/mpeg" /></audio></div>
 </div>
-<!--文本区域-->
-<div class="text">
-<input type="text" name="songname"  placeholder="猜对有奖" id="songname">
-<input type="button" name="btn" value="确定" id="confirm">
+<!--用户答案-->
+<div class="user-answer">
 </div>
-
+<!--文字-->
+<div class="characters">
+    <ul></ul>
+</div>
 
 
 
@@ -63,22 +96,18 @@
     <script type="text/javascript" src="jqueryrotate/js/jQueryRotate.js"></script>
     <script type="text/javascript">
         //创建对象
-        var audioCollection = [{src:"music/111.mp3",name:"儿时"}];
+        var audioCollection = [{src:"music/111.mp3",name:"儿时"},{src:"music/222.mp3",name:"七月上"}];
     </script>
     <script type="text/javascript">
 
-     var w1 = $(".playwrap").width();
-    $(".playwrap").height(w1);
-    var w2 = $(".playarea").width();
-    $(".playarea").height(w2);
-       $(function(){
-        //播放完毕
-        $('#mp3Btn').on('ended', function() {
-            console.log("音频已播放完成");
-            $('.btn-audio').css({'background':'url(images/voice_play.png) no-repeat center bottom','background-size':'cover'});
-            window.clearInterval(r);
-        })
-        //播放器控制
+        var w1 = $(".playwrap").width();
+        $(".playwrap").height(w1);
+        var w2 = $(".playarea").width();
+        $(".playarea").height(w2);
+        
+       
+
+        $(function(){
         var audio = document.getElementById('mp3Btn');
         var $comfirm = $("#confirm");
         var $songname = $("#songname");
@@ -86,46 +115,32 @@
         var r;
         var angle = 0;
         var t;
-        var end=5;
+        var end=10;
         //插入音频资源
-        $("#mp3Btn source").attr("src",audioCollection[0].src);
+        $("#mp3Btn source").attr("src",audioCollection[1].src);
 
         //播放和停止控制
         $('.btn-audio').click(function() {
             event.stopPropagation();//防止冒泡
-            if(audio.paused){ //如果当前是暂停状态
-                $('.btn-audio').css({'background':'url(images/voice_stop.png) no-repeat center bottom','background-size':'cover'});
-                audio.play(); //播放
-                //旋转
-                coverRotate()
-            }else{//当前是播放状态
-                $('.btn-audio').css({'background':'url(images/voice_play.png) no-repeat center bottom','background-size':'cover'});
-                audio.load(); //暂停
-                window.clearInterval(r);
+            if(audio.paused){ 
+                p();
+            }else{
+                s();
             }
         });
-
+         //播放完毕时停止
+        $('#mp3Btn').on('ended', function() {
+            s();
+        })
 
         
         //使音频在指定时间停止
         audio.ontimeupdate=function(){
             if (audio.currentTime>end) {
-                $('.btn-audio').css({'background':'url(images/voice_play.png) no-repeat center bottom','background-size':'cover'});
-                audio.load();
-                window.clearInterval(r);
+                s();
             }
         };
-       //如果猜歌正确，那么播放音频
-        $comfirm.click(function() {
-            if($songname.val()==audioCollection[0].name){ //如果当前是暂停状态
-                $('.btn-audio').css({'background':'url(images/voice_stop.png) no-repeat center bottom','background-size':'cover'});
-                audio.play();
-                end=500; //播放
-                //旋转
-               coverRotate();
-            };
-        });
-
+      
 
         //封面旋转
         function coverRotate(){
@@ -136,8 +151,45 @@
               },50);
                 return;
         }
-      
+
+        //播放
+        function p(){
+            $('.btn-audio').css({'background':'url(images/voice_stop.png) no-repeat center bottom','background-size':'cover'});
+                audio.play(); //播放
+                //旋转
+                coverRotate();
+        }
+
+        //停止
+        function s(){
+             $('.btn-audio').css({'background':'url(images/voice_play.png) no-repeat center bottom','background-size':'cover'});
+                audio.load(); //暂停
+                window.clearInterval(r);
+        }
     })
+
+
+
+        $(function(){
+            var name_length = audioCollection[1].name.length;
+            for (var i = name_length - 1; i >= 0; i--) {
+                $(".user-answer").append("<p></p>");
+            }
+            for (var i = 20; i >= 0; i--) {
+                 $(".characters ul").append("<li></li>")}
+            var w3 = $(".characters li").width();
+            $(".characters li").height(w3);
+
+        })
+
+
+        /*如果猜歌正确，那么播放音频
+        $comfirm.click(function() {
+            if($songname.val()==audioCollection[0].name){ //如果当前是暂停状态
+                p();
+            };
+        });*/
+
     </script>
    
 </body>
